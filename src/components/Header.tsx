@@ -6,9 +6,18 @@ interface HeaderProps {
   onRefresh: () => void;
   timestamp: string | null;
   totalParticipants: number;
+  selectedYear: 'all' | '2569' | '2568';
+  onYearChange: (year: 'all' | '2569' | '2568') => void;
 }
 
-export default function Header({ loading, onRefresh, timestamp, totalParticipants }: HeaderProps) {
+export default function Header({ 
+  loading, 
+  onRefresh, 
+  timestamp, 
+  totalParticipants, 
+  selectedYear, 
+  onYearChange 
+}: HeaderProps) {
   const formattedTime = timestamp
     ? new Date(timestamp).toLocaleTimeString('th-TH', {
         hour: '2-digit',
@@ -25,6 +34,10 @@ export default function Header({ loading, onRefresh, timestamp, totalParticipant
       })
     : '';
 
+  const selectedYearText = selectedYear === 'all' 
+    ? 'ปี 2568 - 2569' 
+    : `ปี ${selectedYear}`;
+
   return (
     <header className="relative w-full border-b border-purple-100 bg-white py-6 shadow-sm">
       {/* Decorative Golden Top Line */}
@@ -40,34 +53,50 @@ export default function Header({ loading, onRefresh, timestamp, totalParticipant
           <div>
             <div className="flex items-center gap-2">
               <span className="rounded-md bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700 border border-amber-200">
-                PEA Knowledge Hub
+                PEA Knowledge Hub (ฝพจ.)
               </span>
               <span className="flex items-center gap-1 text-xs text-purple-700 font-medium">
                 <Sparkles className="h-3 w-3 text-amber-500" /> Official Dashboard
               </span>
             </div>
             <h1 className="mt-1 font-sans text-xl font-bold tracking-tight text-purple-950 sm:text-2xl">
-              แดชบอร์ดสรุปผลการอบรมให้ความรู้ <span className="text-amber-600">กฟภ.</span>
+              แดชบอร์ดสรุปผลการอบรมให้ความรู้ของ <span className="text-amber-600">ฝพจ.</span>
             </h1>
             <p className="text-xs text-slate-500">
-              ความเชี่ยวชาญ 3 ด้านหลัก: AI, Automation (RPA) และ Microsoft Copilot Studio (ปี 2568 - 2569)
+              ความเชี่ยวชาญ 3 ด้านหลัก: AI, Automation (RPA) และ Microsoft Copilot Studio ({selectedYearText})
             </p>
           </div>
         </div>
 
         {/* Action Controls & Sync Status */}
         <div className="flex flex-wrap items-center justify-center gap-3 sm:justify-end">
+          
+          {/* Year Filter Dropdown Selection block */}
+          <div className="flex items-center gap-2 rounded-xl bg-purple-50/50 p-1.5 px-3 border border-purple-100">
+            <span className="text-xs font-bold text-purple-950">เลือกปีประเมิน:</span>
+            <select
+              id="year-select"
+              value={selectedYear}
+              onChange={(e) => onYearChange(e.target.value as 'all' | '2569' | '2568')}
+              className="rounded-lg border border-purple-200 bg-white px-3 py-1.5 text-xs font-bold text-purple-950 shadow-sm transition hover:border-purple-300 focus:border-purple-600 focus:outline-none focus:ring-1 focus:ring-purple-600 cursor-pointer"
+            >
+              <option value="all">⚡ รวมทุกปี (2568 - 2569)</option>
+              <option value="2569">🗓️ ปี 2569 (ปีปัจจุบัน)</option>
+              <option value="2568">📜 ปี 2568 (ปีก่อนๆ)</option>
+            </select>
+          </div>
+
           {timestamp && (
-            <div className="hidden flex-col items-end text-right md:flex">
+            <div className="hidden flex-col items-end text-right xl:flex">
               <span className="flex items-center gap-1.5 text-xs font-medium text-purple-950">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
                 </span>
-                เชื่อมต่อฐานข้อมูล Google Sheets สำเร็จ
+                เชื่อมต่อฐานข้อมูล Sheets สำเร็จ
               </span>
               <span className="text-[11px] text-slate-400">
-                ดึงข้อมูลล่าสุดเมื่อ {formattedDate} {formattedTime} น.
+                อัปเดตแกนรอบละ {formattedTime} น.
               </span>
             </div>
           )}
@@ -76,10 +105,10 @@ export default function Header({ loading, onRefresh, timestamp, totalParticipant
             id="refresh_data_btn"
             onClick={onRefresh}
             disabled={loading}
-            className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-purple-800 to-purple-900 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-purple-100 transition-all hover:from-purple-700 hover:to-purple-800 hover:shadow-lg disabled:opacity-50 ring-1 ring-purple-950 active:scale-95 cursor-pointer max-xs:w-full justify-center"
+            className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-purple-800 to-purple-900 px-4 py-2 text-xs font-semibold text-white shadow-md shadow-purple-100 transition-all hover:from-purple-700 hover:to-purple-800 hover:shadow-lg disabled:opacity-50 ring-1 ring-purple-950 active:scale-95 cursor-pointer max-xs:w-full justify-center"
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''} text-amber-300`} />
-            <span>{loading ? 'กำลังดึงข้อมูล...' : 'รีเฟรชข้อมูล'}</span>
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''} text-amber-300`} />
+            <span>{loading ? 'ดาวน์โหลด...' : 'รีเฟรชข้อมูล'}</span>
           </button>
         </div>
       </div>
