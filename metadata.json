@@ -1,0 +1,6 @@
+{
+  "name": "PEA Training Dashboard",
+  "description": "แดชบอร์ดสรุปผลการอบรมให้ความรู้ด้าน AI, Automation (RPA) และ Copilot Studio ประจำปี 2568 - 2569 แก่หน่วยงานในสังกัด กฟภ. (PEA)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
