@@ -105,6 +105,10 @@ export async function fetchAndParseTrainingData(): Promise<DashboardData> {
     }
   }
 
+  return aggregateRecords(records, new Date().toISOString());
+}
+
+export function aggregateRecords(records: TrainingRecord[], timestamp: string): DashboardData {
   // --- COMPUTE AGGREGATIONS ---
   let totalHours = 0;
   let totalParticipants = 0;
@@ -172,19 +176,27 @@ export async function fetchAndParseTrainingData(): Promise<DashboardData> {
 
     // By Year
     const yearStr = record.year.toString() as '2568' | '2569';
-    byYear[yearStr].recordsCount += 1;
-    byYear[yearStr].hours += record.hours;
-    byYear[yearStr].participants += record.participants;
+    if (byYear[yearStr]) {
+      byYear[yearStr].recordsCount += 1;
+      byYear[yearStr].hours += record.hours;
+      byYear[yearStr].participants += record.participants;
+    }
 
     // By Domain
     const dm = domainMap[record.category];
-    dm.totalHours += record.hours;
-    dm.totalParticipants += record.participants;
-    dm.courseCountByYear[record.year] = (dm.courseCountByYear[record.year] || 0) + 1;
-    dm.participantCountByYear[record.year] = (dm.participantCountByYear[record.year] || 0) + record.participants;
+    if (dm) {
+      dm.totalHours += record.hours;
+      dm.totalParticipants += record.participants;
+      dm.courseCountByYear[record.year] = (dm.courseCountByYear[record.year] || 0) + 1;
+      dm.participantCountByYear[record.year] = (dm.participantCountByYear[record.year] || 0) + record.participants;
+    }
     
-    domainDeptsMap[record.category].add(record.department);
-    domainCoursesMap[record.category].add(record.course);
+    if (domainDeptsMap[record.category]) {
+      domainDeptsMap[record.category].add(record.department);
+    }
+    if (domainCoursesMap[record.category]) {
+      domainCoursesMap[record.category].add(record.course);
+    }
 
     // Department grouping
     let deptSum = deptSummaryMap.get(record.department);
@@ -244,6 +256,6 @@ export async function fetchAndParseTrainingData(): Promise<DashboardData> {
       domains: domainMap
     },
     departmentsSummary,
-    timestamp: new Date().toISOString()
+    timestamp
   };
 }
