@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sliders, RefreshCw, AlertTriangle, Cpu, HelpCircle, ShieldCheck, Database, LayoutGrid } from 'lucide-react';
 import { DashboardData } from './types';
+import { fetchAndParseTrainingData } from './parser';
 import Header from './components/Header';
 import OverviewCards from './components/OverviewCards';
 import DrillDownSection from './components/DrillDownSection';
@@ -11,20 +12,31 @@ export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch training program aggregates from server API proxy
+  // Fetch training program aggregates from server API proxy with client fallback
   const fetchTrainingData = async () => {
     setLoading(true);
     setError(null);
     try {
+      console.log('[App] Attempting to fetch training statistics from backend API proxy...');
       const res = await fetch('/api/training-data');
-      if (!res.ok) {
-        throw new Error(`สถานะการเชื่อมต่อล้มเหลว: ${res.statusText}`);
+      if (res.ok) {
+        const parsedData: DashboardData = await res.json();
+        setData(parsedData);
+      } else {
+        // Fallback to client-side parse if the server gives non-200 status (e.g. 404 on Vercel static host)
+        console.warn(`[App] API returned status ${res.status}. Falling back to direct client-side spreadsheet compilation...`);
+        const parsedData = await fetchAndParseTrainingData();
+        setData(parsedData);
       }
-      const parsedData: DashboardData = await res.json();
-      setData(parsedData);
     } catch (err: any) {
-      console.error('Fetch error:', err);
-      setError(err.message || 'ไม่สามารถดึงข้อมูลกิจกรรมจาก Google Sheets ได้');
+      console.warn('[App] API proxy failed to respond. Performing direct client-side spreadsheet fetch & compile...', err);
+      try {
+        const parsedData = await fetchAndParseTrainingData();
+        setData(parsedData);
+      } catch (fallbackErr: any) {
+        console.error('[App] Direct spreadsheet pipeline failed:', fallbackErr);
+        setError(fallbackErr.message || 'ไม่สามารถรวบรวมข้อมูลกิจกรรมหรือเชื่อมโยงกับ Google Sheets และระบบสำรองได้');
+      }
     } finally {
       setLoading(false);
     }
