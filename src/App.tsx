@@ -1,16 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Sliders, RefreshCw, AlertTriangle, Cpu, HelpCircle, ShieldCheck, Database, LayoutGrid } from 'lucide-react';
 import { DashboardData } from './types';
-import { fetchAndParseTrainingData } from './parser';
+import { fetchAndParseTrainingData, aggregateRecords } from './parser';
 import Header from './components/Header';
 import OverviewCards from './components/OverviewCards';
 import DrillDownSection from './components/DrillDownSection';
 import SearchGrid from './components/SearchGrid';
 
 export default function App() {
-  const [data, setData] = useState<DashboardData | null>(null);
+  const [masterData, setMasterData] = useState<DashboardData | null>(null);
+  const [selectedYear, setSelectedYear] = useState<'all' | '2569' | '2568'>('all');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Filter and dynamic compute statistics using useMemo
+  const data = useMemo<DashboardData | null>(() => {
+    if (!masterData) return null;
+    if (selectedYear === 'all') return masterData;
+
+    const filterYearVal = parseInt(selectedYear, 10);
+    const filteredRecords = masterData.records.filter((r) => r.year === filterYearVal);
+
+    // Compute dynamic layout calculations on response
+    return aggregateRecords(filteredRecords, masterData.timestamp);
+  }, [masterData, selectedYear]);
 
   // Fetch training program aggregates from server API proxy with client fallback
   const fetchTrainingData = async () => {
@@ -21,18 +34,18 @@ export default function App() {
       const res = await fetch('/api/training-data');
       if (res.ok) {
         const parsedData: DashboardData = await res.json();
-        setData(parsedData);
+        setMasterData(parsedData);
       } else {
         // Fallback to client-side parse if the server gives non-200 status (e.g. 404 on Vercel static host)
         console.warn(`[App] API returned status ${res.status}. Falling back to direct client-side spreadsheet compilation...`);
         const parsedData = await fetchAndParseTrainingData();
-        setData(parsedData);
+        setMasterData(parsedData);
       }
     } catch (err: any) {
       console.warn('[App] API proxy failed to respond. Performing direct client-side spreadsheet fetch & compile...', err);
       try {
         const parsedData = await fetchAndParseTrainingData();
-        setData(parsedData);
+        setMasterData(parsedData);
       } catch (fallbackErr: any) {
         console.error('[App] Direct spreadsheet pipeline failed:', fallbackErr);
         setError(fallbackErr.message || 'ไม่สามารถรวบรวมข้อมูลกิจกรรมหรือเชื่อมโยงกับ Google Sheets และระบบสำรองได้');
@@ -48,7 +61,7 @@ export default function App() {
   }, []);
 
   // Professional Full-Page Corporate Loader (White / Purple / Gold)
-  if (loading && !data) {
+  if (loading && !masterData) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4">
         <div className="relative flex flex-col items-center max-w-sm rounded-2xl border border-purple-100 bg-white p-8 text-center shadow-lg">
@@ -78,7 +91,7 @@ export default function App() {
   }
 
   // Professional Error States
-  if (error && !data) {
+  if (error && !masterData) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4">
         <div className="relative max-w-md rounded-2xl border border-red-100 bg-white p-8 text-center shadow-lg">
@@ -119,8 +132,10 @@ export default function App() {
       <Header
         loading={loading}
         onRefresh={fetchTrainingData}
-        timestamp={data?.timestamp || null}
+        timestamp={masterData?.timestamp || null}
         totalParticipants={data?.summary.totalParticipants || 0}
+        selectedYear={selectedYear}
+        onYearChange={setSelectedYear}
       />
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
@@ -128,7 +143,7 @@ export default function App() {
         {data && (
           <>
             {/* 2. Overview statistical summary cards */}
-            <OverviewCards data={data} />
+            <OverviewCards data={data} selectedYear={selectedYear} />
 
             {/* 3. Drill Down statistics grouped by department */}
             <DrillDownSection departments={data.departmentsSummary} />
