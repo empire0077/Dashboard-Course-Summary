@@ -160,8 +160,14 @@ export default function App() {
         <p className="border-t border-slate-200 pt-6 text-[11px]">
           ระบบรายงานกิจกรรมและสัมมนาและทักษะยกระดับดิจิทัล (AI, RPA, Copilot Studio) พนักงาน การไฟฟ้าส่วนภูมิภาค (กฟภ. / PEA) 
         </p>
-        <p className="text-[10px] text-slate-400 mt-1">
-          พัฒนาอย่างเป็นทางการโดยใช้ข้อมูลผ่าน Google Sheets Integration และขับเคลื่อนด้วย React + Tailwind CSS
+        <p className="text-[11px] text-slate-500 mt-1.5 flex flex-wrap items-center justify-center gap-1.5 font-medium">
+          <span>สถาปัตยกรรมระบบและพัฒนาโดย</span>
+          <span className="font-bold text-slate-700">นวภัทร์ ธรรมชอบ</span>
+          <span className="text-slate-300">|</span>
+          <span>ติดต่อสอบถาม:</span>
+          <a href="mailto:nawapat.tha@pea.co.th" className="text-purple-800 font-semibold hover:underline">
+            nawapat.tha@pea.co.th
+          </a>
         </p>
       </footer>
     </div>
