@@ -29,7 +29,7 @@ export default function OverviewCards({ data, selectedYear }: OverviewCardsProps
             </span>
           </h2>
           <p className="text-xs text-slate-500">
-            วิเคราะห์กิจกรรมสัมมนา ข้อมูลกิจกรรมความสนใจและผลสัมฤทธิ์สะสมในการเพิ่มพูนทักษะดิจิทัลของ ฝพจ. กฟภ.
+            วิเคราะห์กิจกรรมสัมมนา ข้อมูลกิจกรรมความสนใจและผลสัมฤทธิ์สะสมในการเพิ่มพูนทักษะดิจิทัลของ กฟภ.
           </p>
         </div>
         <span className="inline-flex self-start sm:self-center items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 border border-amber-250">
@@ -135,7 +135,7 @@ export default function OverviewCards({ data, selectedYear }: OverviewCardsProps
           </div>
           <div className="mt-4 flex items-center gap-2 border-t border-slate-100 pt-3 text-[11px] text-slate-400 justify-between">
             <span className="truncate text-slate-400">ฝ่ายงานส่วนกลางและเขตภูมิภาค</span>
-            <span className="font-semibold text-purple-800">ฝพจ. ดูแลครอบคลุม</span>
+            <span className="font-semibold text-purple-800">ดูแลครอบคลุมทุกฝ่าย</span>
           </div>
         </div>
 

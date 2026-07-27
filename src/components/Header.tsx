@@ -53,14 +53,14 @@ export default function Header({
           <div>
             <div className="flex items-center gap-2">
               <span className="rounded-md bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700 border border-amber-200">
-                PEA Knowledge Hub (ฝพจ.)
+                PEA Knowledge Hub
               </span>
               <span className="flex items-center gap-1 text-xs text-purple-700 font-medium">
                 <Sparkles className="h-3 w-3 text-amber-500" /> Official Dashboard
               </span>
             </div>
             <h1 className="mt-1 font-sans text-xl font-bold tracking-tight text-purple-950 sm:text-2xl">
-              แดชบอร์ดสรุปผลการอบรมให้ความรู้ของ <span className="text-amber-600">ฝพจ.</span>
+              แดชบอร์ดสรุปผลการอบรมให้ความรู้ด้าน <span className="text-amber-600">AI & Automation</span>
             </h1>
             <p className="text-xs text-slate-500">
               ความเชี่ยวชาญ 3 ด้านหลัก: AI, Automation (RPA) และ Microsoft Copilot Studio ({selectedYearText})
